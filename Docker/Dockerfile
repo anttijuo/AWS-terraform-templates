@@ -1,17 +1,10 @@
-FROM golang:alpine
-MAINTAINER "HashiCorp Terraform Team <terraform@hashicorp.com>"
+FROM alpine:3.15.4
 
-ENV TERRAFORM_VERSION=0.10.0
+RUN apk update && apk add bash && apk add curl && apk add nano && apk add openssl && apk add git && apk add gnupg
 
-RUN apk add --update git bash openssh
+# Install Terraform
+RUN wget https://releases.hashicorp.com/terraform/1.3.8/terraform_1.3.8_linux_amd64.zip
+RUN unzip terraform_1.3.8_linux_amd64.zip
+RUN mv terraform /usr/bin/terraform
 
-ENV TF_DEV=true
-ENV TF_RELEASE=true
-
-WORKDIR $GOPATH/src/github.com/hashicorp/terraform
-RUN git clone https://github.com/hashicorp/terraform.git ./ && \
-    git checkout v${TERRAFORM_VERSION} && \
-    /bin/bash scripts/build.sh
-
-WORKDIR $GOPATH
-ENTRYPOINT ["terraform"]
+CMD tail -f /dev/null
